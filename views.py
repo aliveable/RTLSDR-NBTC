@@ -979,7 +979,7 @@ class InstantSpectrogram(SpectrogramBase):
                     message = "Frequency " + \
                         str(xmax2) + "   Amplitude " + \
                         str(ymax2) + " For " +str(self.count) + \
-                        " Sec"
+                        " Sec\n" + "FM \nLATITUDE: \nLONGITUDE: \nรหัสสถานี: "
                     msg = urllib.urlencode(({"message": message}))
                     LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
                                     "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
