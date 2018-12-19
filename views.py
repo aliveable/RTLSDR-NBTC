@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # FreqShow application views.
 # These contain the majority of the application business logic.
 # Author: Tony DiCola (tony@tonydicola.com)
