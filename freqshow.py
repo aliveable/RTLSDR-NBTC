@@ -31,6 +31,11 @@ import controller
 import model
 import ui
 
+import requests
+import json
+from urlparse import urlparse
+import urllib
+from time import gmtime, strftime
 #import requests,json
 #import urllib.parse
 
@@ -87,6 +92,15 @@ if __name__ == '__main__':
 	screen.blit(splash, ui.align(splash.get_rect(), (0, 0, size[0], size[1])))
 	pygame.display.update()
 	splash_start = time.time()
+	LINE_ACCESS_TOKEN = "LL3fyk42w0TwckIBQa1KhJSQWKR2Wu4NNQGxCbor301"
+	url = "https://notify-api.line.me/api/notify"
+	OpenDate = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+	msg = urllib.urlencode(({"message": OpenDate}))
+	LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
+                    "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
+	session = requests.Session()
+	a = session.post(url, headers=LINE_HEADERS, data=msg)
+	print(a.text)
 	# Create model and controller.
 	fsmodel = model.FreqShowModel(size[0], size[1])
 	fscontroller = controller.FreqShowController(fsmodel)
@@ -103,3 +117,4 @@ if __name__ == '__main__':
 		# Update and render the current view.
 		fscontroller.current().render(screen)
 		pygame.display.update()
+
