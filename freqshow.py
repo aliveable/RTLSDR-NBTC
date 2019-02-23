@@ -94,7 +94,7 @@ if __name__ == '__main__':
 	splash_start = time.time()
 	LINE_ACCESS_TOKEN = "LL3fyk42w0TwckIBQa1KhJSQWKR2Wu4NNQGxCbor301"
 	url = "https://notify-api.line.me/api/notify"
-	OpenDate = "Open at: " + strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+	OpenDate ="รหัสสถานี 02521218\nวิทยาลัยเทคนิคกาญจนบุรี\nOpen at: " + strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 	msg = urllib.urlencode(({"message": OpenDate}))
 	LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
                     "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
