@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # FreqShow main application and configuration.
 # Author: Tony DiCola (tony@tonydicola.com)
 #
