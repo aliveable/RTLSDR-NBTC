@@ -358,9 +358,9 @@ class SettingsList(ViewBase):
         centerfreq_text = 'CENTER FREQ: {0:0.2f} MHz'.format(
             model.get_center_freq())
         samplerate_text = 'SPAN: {0:0.2f} MHz'.format(model.get_sample_rate())
-        gain_text = 'GAIN: {0} dB'.format(model.get_gain())
-        min_text = 'MIN: {0} dB'.format(model.get_min_string())
-        max_text = 'MAX: {0} dB'.format(model.get_max_string())
+        gain_text = 'GAIN: {0} dBm'.format(model.get_gain())
+        min_text = 'MIN: {0} dBm'.format(model.get_min_string())
+        max_text = 'MAX: {0} dBm'.format(model.get_max_string())
         start_text = 'START: {0} MHz'.format(model.get_start_string())
         stop_text = 'STOP: {0} MHz'.format(model.get_stop_string())
         step_text = 'STEP: {0} MHz'.format(model.get_step_string())
@@ -417,7 +417,7 @@ class SettingsList(ViewBase):
         self.controller.change_to_settings()
 
     def gain_click(self, button):
-        self.controller.number_dialog('GAIN:', 'dB',
+        self.controller.number_dialog('GAIN:', 'dBm',
                                       initial=self.model.get_gain(), accept=self.gain_accept,
                                       has_auto=True)
 
@@ -427,7 +427,7 @@ class SettingsList(ViewBase):
         self.controller.change_to_settings()
 
     def min_click(self, button):
-        self.controller.number_dialog('MIN:', 'dB',
+        self.controller.number_dialog('MIN:', 'dBm',
                                       initial=self.model.get_min_string(), accept=self.min_accept,
                                       has_auto=True, allow_negative=True)
 
@@ -437,7 +437,7 @@ class SettingsList(ViewBase):
         self.controller.change_to_settings()
 
     def max_click(self, button):
-        self.controller.number_dialog('MAX:', 'dB',
+        self.controller.number_dialog('MAX:', 'dBm',
                                       initial=self.model.get_max_string(), accept=self.max_accept,
                                       has_auto=True, allow_negative=True)
 
@@ -500,9 +500,9 @@ class SettingsList2(ViewBase):
         centerfreq_text = 'CENTER FREQ: {0:0.2f} MHz'.format(
             model.get_center_freq())
         samplerate_text = 'SPAN: {0:0.2f} MHz'.format(model.get_sample_rate())
-        gain_text = 'GAIN: {0} dB'.format(model.get_gain())
-        min_text = 'MIN: {0} dB'.format(model.get_min_string())
-        max_text = 'MAX: {0} dB'.format(model.get_max_string())
+        gain_text = 'GAIN: {0} dBm'.format(model.get_gain())
+        min_text = 'MIN: {0} dBm'.format(model.get_min_string())
+        max_text = 'MAX: {0} dBm'.format(model.get_max_string())
         start_text = 'START: {0} MHz'.format(model.get_start_string())
         stop_text = 'STOP: {0} MHz'.format(model.get_stop_string())
         step_text = 'STEP: {0} MHz'.format(model.get_step_string())
@@ -561,7 +561,7 @@ class SettingsList2(ViewBase):
         self.controller.change_to_settings()
 
     def gain_click(self, button):
-        self.controller.number_dialog('GAIN:', 'dB',
+        self.controller.number_dialog('GAIN:', 'dBm',
                                       initial=self.model.get_gain(), accept=self.gain_accept,
                                       has_auto=True)
 
@@ -571,7 +571,7 @@ class SettingsList2(ViewBase):
         self.controller.change_to_settings()
 
     def min_click(self, button):
-        self.controller.number_dialog('MIN:', 'dB',
+        self.controller.number_dialog('MIN:', 'dBm',
                                       initial=self.model.get_min_string(), accept=self.min_accept,
                                       has_auto=True, allow_negative=True)
 
@@ -581,7 +581,7 @@ class SettingsList2(ViewBase):
         self.controller.change_to_settings()
 
     def max_click(self, button):
-        self.controller.number_dialog('MAX:', 'dB',
+        self.controller.number_dialog('MAX:', 'dBm',
                                       initial=self.model.get_max_string(), accept=self.max_accept,
                                       has_auto=True, allow_negative=True)
 
@@ -627,7 +627,7 @@ class SettingsList2(ViewBase):
         self.controller.change_to_settings()
 
     def threshold_click(self, button):
-        self.controller.number_dialog('THRESHOLD:', 'dB',
+        self.controller.number_dialog('THRESHOLD:', 'dBm',
                                       initial=self.model.get_threshold_string(), accept=self.threshold_accept,
                                       has_auto=True, allow_negative=True)
 
@@ -652,9 +652,9 @@ class SpectrogramBase(ViewBase):
         self.buttons.add(
             1, 0, 'SET', click=self.controller.change_to_settings, colspan=2)
         self.buttons.add(
-            3, 0, 'MODE', click=self.controller.toggle_main, colspan=2)
+            3, 0, 'STOP', click=self.controller.change_to_instant, colspan=2)
         self.buttons.add(
-            5, 0, 'SWEEP', click=self.controller.toggle_sweep, colspan=2)
+            5, 0, 'SWEEP', click=self.controller.change_to_sweep, colspan=2)
         self.buttons.add(7, 0, 'QUIT', click=self.quit_click,
                          bg_color=freqshow.CANCEL_BG, colspan=2)
         self.buttons.add(0, 0, '<', click=self.previous_click)
@@ -710,12 +710,12 @@ class SpectrogramBase(ViewBase):
             screen.blit(label, ui.align(label.get_rect(), bottom_row,
                                         horizontal=ui.ALIGN_RIGHT))
             # Render min intensity in bottom left.
-            label = ui.render_text('{0:0.0f} dB'.format(self.model.min_intensity),
+            label = ui.render_text('{0:0.0f} dBm'.format(self.model.min_intensity),
                                    size=freqshow.MAIN_FONT)
             screen.blit(label, ui.align(label.get_rect(), spect_rect,
                                         horizontal=ui.ALIGN_LEFT, vertical=ui.ALIGN_BOTTOM))
             # Render max intensity in top left.
-            label = ui.render_text('{0:0.0f} dB'.format(self.model.max_intensity),
+            label = ui.render_text('{0:0.0f} dBm'.format(self.model.max_intensity),
                                    size=freqshow.MAIN_FONT)
             screen.blit(label, ui.align(label.get_rect(), spect_rect,
                                         horizontal=ui.ALIGN_LEFT, vertical=ui.ALIGN_TOP))
@@ -723,7 +723,7 @@ class SpectrogramBase(ViewBase):
             # Render max intensity track.
             # ymax = ymax/320
             # xmax = xmax/480
-            label = ui.render_text('{0:0.0f} dB'.format(ymax2),
+            label = ui.render_text('{0:0.0f} dBm'.format(ymax2),
                                    size=freqshow.MAIN_FONT)
             screen.blit(label, ui.align(label.get_rect(), spect_rect,
                                         horizontal=xmax_label * ui.ALIGN_RIGHT, vertical=0.5 * ui.ALIGN_BOTTOM))
@@ -915,6 +915,7 @@ class InstantSpectrogram(SpectrogramBase):
 
     def render_spectrogram(self, screen):
         # Grab spectrogram data.
+        print("asdasd")
         freqs = self.model.get_data()
         # Scale frequency values to fit on the screen based on the min and max
         # intensity values.
@@ -960,6 +961,7 @@ class InstantSpectrogram(SpectrogramBase):
         puase_str = self.model.get_puase_string()
         threshold = self.model.get_threshold()
         threshold = self.model.get_threshold()
+        time.sleep(0.2)
         if (ymax2 > threshold)and(ymax_r > (threshold - 10))and(ymax_l > (threshold - 10)):
             freq = self.model.get_center_freq()
             bandwidth = self.model.get_sample_rate()
