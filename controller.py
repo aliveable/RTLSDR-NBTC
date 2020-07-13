@@ -40,8 +40,8 @@ class FreqShowController(object):
 		self.waterfall = WaterfallSpectrogram(model, self)
 		self.sweep = SweepSpectrogram(model, self)
 		# Start with instantaneous spectrogram.
-		self._current_view = None
-		self.change_to_sweep()
+		self._current_view = self.instant
+		# self.change_to_sweep()
 
 	def change_view(self, view):
 		"""Change to specified view."""
@@ -88,10 +88,10 @@ class FreqShowController(object):
 
 	def toggle_main(self, *args):
 		"""Switch between instantaneous and waterfall spectrogram views."""
-		if self._current_view == self.waterfall:
+		if self._current_view == self.sweep:
 			self.change_to_instant()
 		else:
-			self.change_to_waterfall()
+			self.change_to_sweep()
 
 	def sweep_change(self, *args):
 		self.change_to_sweep()
