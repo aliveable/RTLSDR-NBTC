@@ -651,10 +651,8 @@ class SpectrogramBase(ViewBase):
         self.buttons = ui.ButtonGrid(model.width, model.height, 10, 8)
         self.buttons.add(
             1, 0, 'SET', click=self.controller.change_to_settings, colspan=2)
-        self.buttons.add(
-            3, 0, 'STOP', click=self.controller.change_to_instant, colspan=2)
-        self.buttons.add(
-            5, 0, 'SWEEP', click=self.controller.change_to_sweep, colspan=2)
+        # self.buttons.add(3, 0, 'STOP', click=self.controller.change_to_justinstant, colspan=2)
+        self.buttons.add(3, 0, 'SWEEP', click=self.controller.change_to_sweep, colspan=4)
         self.buttons.add(7, 0, 'QUIT', click=self.quit_click,
                          bg_color=freqshow.CANCEL_BG, colspan=2)
         self.buttons.add(0, 0, '<', click=self.previous_click)
@@ -792,7 +790,6 @@ class WaterfallSpectrogram(SpectrogramBase):
         self.waterfall.unlock()
         screen.blit(self.waterfall, (0, 0), area=(0, offset, width, height))
 
-
 class SweepSpectrogram(SpectrogramBase):
     """Instantaneous point in time line plot of the spectrogram."""
 
@@ -802,6 +799,7 @@ class SweepSpectrogram(SpectrogramBase):
     def render_spectrogram(self, screen):
         sw_stop = self.model.get_stop_sweep()
         sw_step = self.model.get_step_sweep()
+        print('sweep render')
         if self.model.get_center_freq() < sw_stop:
             # Grab spectrogram data.
             freqs = self.model.get_data()
@@ -811,9 +809,7 @@ class SweepSpectrogram(SpectrogramBase):
             freqs2 = freqs
             freqs3 = freqs
             freqs4 = freqs
-            freqs = height - \
-                np.floor(((freqs - self.model.min_intensity) /
-                          self.model.range) * height)
+            freqs = height - np.floor(((freqs - self.model.min_intensity) / self.model.range) * height)
             # Render frequency graph.
             screen.fill(freqshow.MAIN_BG)
             # Draw line segments to join each FFT result bin.
@@ -821,10 +817,8 @@ class SweepSpectrogram(SpectrogramBase):
             ymax = 320
             for i in range(1, width):
                 y = freqs[i]
-                pygame.draw.line(screen, freqshow.INSTANT_LINE,
-                                 (i - 1, ylast), (i, y))
+                pygame.draw.line(screen, freqshow.INSTANT_LINE,(i - 1, ylast), (i, y))
                 ylast = y
-
                 if i > 0:
                     if freqs[i] < ymax:
                         i_r = i + 24
@@ -852,25 +846,10 @@ class SweepSpectrogram(SpectrogramBase):
                         global ymax_l
                         global i_r
                         global i_l
-
-                    # ymax_r = freqs3[xmax + 24]
-                    # ymax_l = freqs4[xmax - 24]
-                    # global ymax_r
-                    # global ymax_l
-            # i_r = xmax+24
-            # i_l = xmax-24
-            # ymax_r = freqs3[i_r]
-            # ymax_l = freqs4[i_l]
-            # global ymax_r
-            # global ymax_l
-
-            pygame.draw.line(screen, freqshow.MARK_LINE,
-                             (xmax, 0), (xmax, 320))
-            pygame.draw.line(screen, freqshow.MARK_LINE,
-                             ((xmax - 5), ymax), ((xmax + 5), ymax))
+            pygame.draw.line(screen, freqshow.MARK_LINE,(xmax, 0), (xmax, 320))
+            pygame.draw.line(screen, freqshow.MARK_LINE,((xmax - 5), ymax), ((xmax + 5), ymax))
             time.sleep(0.2)
             puase_str = self.model.get_puase_string()
-            threshold = self.model.get_threshold()
             threshold = self.model.get_threshold()
             if (ymax2 > threshold)and(ymax_r > (threshold - 10))and(ymax_l > (threshold - 10)):
                 freq = self.model.get_center_freq()
@@ -879,9 +858,7 @@ class SweepSpectrogram(SpectrogramBase):
                 if xmax2 > 108:
                     self.controller.instant_change()
             else:
-                self.model.set_center_freq(
-
-                    self.model.get_center_freq() + sw_step)
+                self.model.set_center_freq(self.model.get_center_freq() + sw_step)
         else:
             sw_start = self.model.get_start_sweep()
             self.model.set_center_freq(sw_start)
@@ -904,6 +881,114 @@ class SweepSpectrogram(SpectrogramBase):
             # ylast = y
             time.sleep(0.2)
 
+class JustInstantSpectrogram(SpectrogramBase):
+    """Instantaneous point in time line plot of the spectrogram."""
+
+    def __init__(self, model, controller):
+        self.count = 0
+        super(JustInstantSpectrogram, self).__init__(model, controller)
+
+    def render_spectrogram(self, screen):
+        # print('just render')
+		# Grab spectrogram data.
+        freqs = self.model.get_data()
+		# Scale frequency values to fit on the screen based on the min and max
+		# intensity values.
+        x, y, width, height = screen.get_rect()
+        freqs2 = freqs
+        freqs3 = freqs
+        freqs4 = freqs
+        freqs = height - np.floor(((freqs - self.model.min_intensity) / self.model.range) * height)
+		# Render frequency graph.
+        screen.fill(freqshow.MAIN_BG)
+		# Draw line segments to join each FFT result bin.
+        ylast = freqs[0]
+        ymax = 320
+        # print(len(freqs))
+        for i in range(1, width):
+            y = freqs[i]
+            pygame.draw.line(screen, freqshow.INSTANT_LINE,(i - 1, ylast), (i, y))
+            ylast = y
+            if i > 0:
+                if freqs[i] < ymax:
+                    i_r = i + 24
+                    i_l = i - 24
+                    ymax = freqs[i]
+                    if i_r < 480:
+                        ymax_r = freqs3[i_r]
+                    if i_l > 0:
+                        ymax_l = freqs4[i_l]
+                    xmax = i
+                    ymax2 = freqs2[i]
+                    ymax_label = ymax / 320.
+                    xmax_label = xmax / 480.
+                    # xmax_r = i+48
+                    # xmax_l = i-48
+                    if xmax_label < 0.5:
+                        xmax_label = xmax_label + 0.1
+                    else:
+                        xmax_label = xmax_label - 0.1
+                    global ymax2
+                    global xmax_label
+                    global ymax_label
+                    global xmax
+                    global ymax_r
+                    global ymax_l
+                    global i_r
+                    global i_l
+        pygame.draw.line(screen, freqshow.MARK_LINE,(xmax, 0), (xmax, 320))
+        pygame.draw.line(screen, freqshow.MARK_LINE,((xmax - 5), ymax), ((xmax + 5), ymax))
+        time.sleep(0.2)
+        puase_str = self.model.get_puase_string()
+        threshold = self.model.get_threshold()
+        # print("ymax2: ")
+        # print(ymax2)
+        # print(" Threshold: ")
+        # print(threshold)
+        # print("ymax_r: ")
+        # print(ymax_r)
+        # print(" Threshold - 10: ")
+        # print(threshold - 10)
+        # print("ymax_l: ")
+        # print(ymax_l)
+        # print(" Threshold - 10: ")
+        # print(threshold - 10)
+        if (ymax2 > threshold)and(ymax_r > (threshold - 10))and(ymax_l > (threshold - 10)):
+            freq = self.model.get_center_freq()
+            bandwidth = self.model.get_sample_rate()
+            xmax2 = freq - bandwidth * (0.5 - (xmax / 480))
+            print(xmax2)
+            if xmax2 > 108:
+                if self.count == 10:
+                    print(str(self.count) + " in if count")
+                    self.model.set_puase_intensity('ENABLE')
+                    #LINE_ACCESS_TOKEN = "bqcrEdUNzesoqYp5XI7huzhkxuFpKZhnLtc3I423BqE"
+                    LINE_ACCESS_TOKEN = "LL3fyk42w0TwckIBQa1KhJSQWKR2Wu4NNQGxCbor301"
+                    url = "https://notify-api.line.me/api/notify"
+
+                    freq = self.model.get_center_freq()
+                    bandwidth = self.model.get_sample_rate()
+                    xmax2 = freq - bandwidth * (0.5 - (xmax / 480))
+
+                    message = "Frequency " + \
+                        str(xmax2) + "   Amplitude " + \
+                        str(ymax2) + " For " +str(self.count) + \
+                        " Sec\n" + "FM "+self.station_name+" MHz\n\nLATITUDE: \nLONGITUDE: \nรหัสสถานี: "
+                    msg = urllib.urlencode(({"message": message}))
+                    LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
+                                    "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
+                    session = requests.Session()
+                    a = session.post(url, headers=LINE_HEADERS, data=msg)
+                    print(a.text)
+                    #####
+                    self.model.set_center_freq(self.model.get_center_freq() + (0.5 * bandwidth))
+                    #####
+                    self.count = 0
+                else:
+                    self.count += 1
+                    print(str(self.count) + " else")
+                    time.sleep(1)
+        
 
 
 class InstantSpectrogram(SpectrogramBase):
@@ -915,7 +1000,7 @@ class InstantSpectrogram(SpectrogramBase):
 
     def render_spectrogram(self, screen):
         # Grab spectrogram data.
-        print("asdasd")
+        print('instant')
         freqs = self.model.get_data()
         # Scale frequency values to fit on the screen based on the min and max
         # intensity values.
@@ -955,8 +1040,7 @@ class InstantSpectrogram(SpectrogramBase):
                     global i_l
 
         pygame.draw.line(screen, freqshow.MARK_LINE, (xmax, 0), (xmax, 320))
-        pygame.draw.line(screen, freqshow.MARK_LINE,
-                         ((xmax - 5), ymax), ((xmax + 5), ymax))
+        pygame.draw.line(screen, freqshow.MARK_LINE, ((xmax - 5), ymax), ((xmax + 5), ymax))
 
         puase_str = self.model.get_puase_string()
         threshold = self.model.get_threshold()
@@ -978,10 +1062,8 @@ class InstantSpectrogram(SpectrogramBase):
                     bandwidth = self.model.get_sample_rate()
                     xmax2 = freq - bandwidth * (0.5 - (xmax / 480))
 
-                    message = "Frequency " + \
-                        str(xmax2) + "   Amplitude " + \
-                        str(ymax2) + " For " +str(self.count) + \
-                        " Sec\n" + "FM  MHz\n\nLATITUDE: \nLONGITUDE: \nรหัสสถานี: "
+                    message = "\nFrequency \n" + str(xmax2) + "\nAmplitude \n" + str(ymax2) + "\nFor " +str(self.count) + \
+                        " Sec\n" + "FM "+self.model.station_frequency+" MHz\n"+self.model.station_name+"\nLATITUDE:\n"+ self.model.station_latitude+"\nLONGITUDE:\n"+self.model.station_longitude+"\nรหัสสถานี: "+self.model.station_code
                     msg = urllib.urlencode(({"message": message}))
                     LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
                                     "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
@@ -989,8 +1071,7 @@ class InstantSpectrogram(SpectrogramBase):
                     a = session.post(url, headers=LINE_HEADERS, data=msg)
                     print(a.text)
                     #####
-                    self.model.set_center_freq(
-                        self.model.get_center_freq() + (0.5 * bandwidth))
+                    self.model.set_center_freq(self.model.get_center_freq() + (0.5 * bandwidth))
                     #####
                     self.count = 0
                     self.controller.sweep_change()

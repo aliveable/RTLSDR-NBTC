@@ -37,6 +37,7 @@ class FreqShowController(object):
 		# Create instantaneous and waterfall spectrogram views once because they
 		# hold state and have a lot of data.
 		self.instant = InstantSpectrogram(model, self)
+		self.justinstant = JustInstantSpectrogram(model, self)
 		self.waterfall = WaterfallSpectrogram(model, self)
 		self.sweep = SweepSpectrogram(model, self)
 		# Start with instantaneous spectrogram.
@@ -110,7 +111,6 @@ class FreqShowController(object):
 		"""Change to instantaneous spectrogram view."""
 		self._main_view = self.instant
 		self.change_view(self.instant)
-
 
 	def change_to_waterfall(self, *args):
 		"""Change to waterfall spectrogram view."""

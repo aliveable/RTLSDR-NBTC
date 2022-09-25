@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 # FreqShow main application model/state.
 # Author: Tony DiCola (tony@tonydicola.com)
 #
@@ -60,6 +62,12 @@ class FreqShowModel(object):
 		self.set_sample_rate(1)
 		self.set_gain(30)
 		self.stop_auto = True
+		# ตั้งค่าสถานีข้างล่างนี้
+		self.station_frequency = ''
+		self.station_name = 'test name'
+		self.station_code = '0123456'
+		self.station_latitude = ''
+		self.station_longitude = ''
 
 	def _clear_intensity(self):
 		if self.min_auto_scale:

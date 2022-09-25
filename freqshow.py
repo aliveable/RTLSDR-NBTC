@@ -25,6 +25,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import os
+import sys
 import time
 
 import pygame
@@ -94,9 +95,12 @@ if __name__ == '__main__':
 	screen.blit(splash, ui.align(splash.get_rect(), (0, 0, size[0], size[1])))
 	pygame.display.update()
 	splash_start = time.time()
+	fsmodel = model.FreqShowModel(size[0], size[1])
+	fscontroller = controller.FreqShowController(fsmodel)
+	# print(fsmodel.station_name)
 	LINE_ACCESS_TOKEN = "LL3fyk42w0TwckIBQa1KhJSQWKR2Wu4NNQGxCbor301"
 	url = "https://notify-api.line.me/api/notify"
-	OpenDate ="รหัสสถานี \n\nOpen at: " + strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+	OpenDate = fsmodel.station_name+"\nรหัสสถานี: "+fsmodel.station_code+"\nเปิดเครื่องวันที่: " + strftime("%Y-%m-%d", time.localtime())+"\nเปิดเครื่องเวลา: " + strftime("%H:%M:%S", time.localtime())
 	msg = urllib.urlencode(({"message": OpenDate}))
 	LINE_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded',
                     "Authorization": "Bearer " + LINE_ACCESS_TOKEN}
@@ -104,8 +108,7 @@ if __name__ == '__main__':
 	a = session.post(url, headers=LINE_HEADERS, data=msg)
 	print(a.text)
 	# Create model and controller.
-	fsmodel = model.FreqShowModel(size[0], size[1])
-	fscontroller = controller.FreqShowController(fsmodel)
+	
 	time.sleep(2.0)
 	# Main loop to process events and render current view.
 	lastclick = 0
